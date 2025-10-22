@@ -1,5 +1,12 @@
 <template>
-  <Beverage :isIced="currentTemp === 'Cold'" />
+  <Beverage 
+  :isIced="currentTemp === 'Cold'"
+  :base="selectedBase"
+  :creamer="selectedCreamer"
+  :syrup="selectedSyrup"
+  :baseColor="baseColor"
+  :creamerColor="creamerColor"
+  :syrupColor="syrupColor" />
   <div class="base-options">
     <ul>
       <li>
@@ -77,13 +84,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Beverage from "./components/Beverage.vue";
-import { temps, currentTemp } from "./stores/beverage";
-import { bases } from "./stores/beverage";
-import { creamers } from "./stores/beverage";
-import { syrups } from "./stores/beverage";
-const selectedBase = ref("");
-const selectedCreamer = ref("");
-const selectedSyrup = ref("");
+import { temps, currentTemp, bases, creamers, syrups } from "./stores/beverage";
+import { computed } from "vue";
+
+const selectedBase = ref(bases.value[0].name);
+const selectedCreamer = ref(creamers.value[0].name);
+const selectedSyrup = ref(syrups.value[0].name);
+
+const baseColor = computed(() => bases.value.find(b => b.name === selectedBase.value)?.color ?? "transparent");
+const creamerColor = computed(() => creamers.value.find(c => c.name === selectedCreamer.value)?.color ?? "transparent");
+const syrupColor = computed(() => {const syrup = syrups.value.find(s => s.name === selectedSyrup.value) 
+if (!syrup || syrup.name === "No Syrup") { return baseColor.value}
+return syrup.color });
+
 </script>
 
 <style lang="scss">
